@@ -1,0 +1,39 @@
+[project]
+name = "mlops-sic-lai"
+version = "1.0.0"
+description = "Agente SIC-LAI: Triagem Preditiva e Análise de Risco de Atraso em Pedidos da LAI"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Equipe SIC-LAI MLOps" }
+]
+license = { text = "MIT" }
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.28.0",
+    "pydantic>=2.6.0",
+    "pydantic-settings>=2.2.0",
+    "transformers>=4.40.0",
+    "torch>=2.2.0",
+    "accelerate>=0.28.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.3.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]

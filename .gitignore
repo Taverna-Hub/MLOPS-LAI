@@ -28,3 +28,6 @@ data/processed/*
 
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+
+# Documentos locais não versionados
+docs/
