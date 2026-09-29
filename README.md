@@ -85,7 +85,7 @@ flowchart TD
     Client -->|Check de Prontidão| HEALTH
     Client -->|Envia Pedido em t0| PREDICT
     PREDICT --> LEAK_GUARD
-    LEAK_GUARD -->|Sim (ex: data_resposta)| ERR_422
+    LEAK_GUARD -->|Sim: data_resposta presente| ERR_422
     LEAK_GUARD -->|Não| ABSTENTION_GUARD
     ABSTENTION_GUARD -->|Sim| INDETERMINATE
     ABSTENTION_GUARD -->|Não| HEURISTIC
@@ -198,7 +198,7 @@ Este é o método principal e mais confiável para reproduzir o projeto sem nece
 
 **1. Clone o repositório:**
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/Taverna-Hub/MLOPS-LAI.git
 cd MLOPS
 ```
 
