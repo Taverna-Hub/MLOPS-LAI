@@ -82,7 +82,7 @@ docker compose down
 
 - [`docs/GUIA_REPRODUCAO.md`](docs/GUIA_REPRODUCAO.md) — roteiro para entender o problema e construir uma solução semelhante do zero.
 - [`docs/PRD.md`](docs/PRD.md) — requisitos e escopo do produto.
-- [`docs/LAI_Entendimento_Negocio_v2.0.pdf`](docs/LAI_Entendimento_Negocio_v2.0.pdf) — contexto e entendimento de negócio da LAI.
+- [`docs/LAI_Entendimento_Negocio.pdf`](docs/LAI_Entendimento_Negocio.pdf) — contexto e entendimento de negócio da LAI.
 
 ## Uso de Inteligência Artificial
 
