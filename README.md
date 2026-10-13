@@ -51,9 +51,15 @@ Verifique se a API respondeu:
 curl http://localhost:8000/health
 ```
 
-Em outro terminal, envie uma primeira predição:
+### Exemplos de predição
 
-O comando `curl` abaixo é para Bash; no Windows, execute-o no Git Bash ou WSL.
+Os comandos `curl` abaixo são para Bash; no Windows, execute-os no Git Bash ou WSL. Também é possível enviar os mesmos JSONs pelo Swagger em [`http://localhost:8000/docs`](http://localhost:8000/docs).
+
+O analisador sempre calcula um resultado heurístico. Ele o devolve diretamente para os casos específicos de risco `ALTO` e `BAIXO`, e para risco `MEDIO` quando o órgão contém “INSS”. Nos demais casos, tenta consultar a Qwen. Se a geração falhar ou não respeitar o contrato da resposta, usa o resultado heurístico como fallback. Assim, uma requisição pode consultar a Qwen sem que a resposta final tenha sido produzida por ela.
+
+#### Exemplo 1 — Regra heurística, sem chamada à Qwen
+
+O órgão e os termos do pedido correspondem à regra de risco alto.
 
 ```bash
 curl -X POST http://localhost:8000/predict \
@@ -70,7 +76,47 @@ curl -X POST http://localhost:8000/predict \
   }'
 ```
 
-O exemplo retorna uma classificação `ALTO` pela regra heurística. O **[Guia para construir a solução do zero](docs/GUIA_REPRODUCAO.md)** explica o problema, a preparação dos dados e os passos para implementar uma solução semelhante em um projeto vazio.
+Este exemplo retorna `ALTO` e score `0.88` pela regra heurística; a Qwen não é chamada para analisar esta requisição.
+
+#### Exemplo 2 — Pedido aberto, consulta à Qwen
+
+Este pedido não corresponde às regras específicas por texto ou órgão e segue para a inferência local da Qwen.
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "protocolo": "PAI-QWEN-01",
+    "data_registro": "2026-10-12T11:00:00Z",
+    "orgao_destinatario": "Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renováveis (IBAMA)",
+    "origem_solicitacao": "Internet",
+    "forma_resposta": "E-mail",
+    "resumo_solicitacao": "Etapas para autorização de visita técnica em unidade de conservação",
+    "detalhamento_solicitacao": "Solicito informar quais documentos são necessários para pedir autorização de visita técnica a uma unidade de conservação federal, qual setor recebe o pedido e como o interessado pode acompanhar a análise."
+  }'
+```
+
+Na execução de teste, a Qwen retornou `MEDIO`, score `0.8`, fatores explicativos e uma recomendação. A resposta gerada e a latência podem variar entre execuções; o score é indicativo, não uma probabilidade calibrada.
+
+#### Exemplo 3 — Consulta à Qwen com fallback heurístico
+
+Este pedido também não corresponde às regras específicas, então a aplicação tenta consultar a Qwen. Na execução de teste, a resposta gerada não respeitou o tipo esperado para os fatores de risco; a validação falhou e a API devolveu o fallback heurístico (`MEDIO`, score `0.50`).
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "protocolo": "PAI-QWEN-02",
+    "data_registro": "2026-10-12T11:05:00Z",
+    "orgao_destinatario": "Agência Nacional de Energia Elétrica (ANEEL)",
+    "origem_solicitacao": "Internet",
+    "forma_resposta": "E-mail",
+    "resumo_solicitacao": "Critérios de fiscalização de medidores residenciais",
+    "detalhamento_solicitacao": "Solicito os critérios utilizados para selecionar instalações residenciais para inspeção, o fluxo administrativo aplicado quando a inspeção identifica divergência e os prazos previstos para comunicar o resultado ao consumidor."
+  }'
+```
+
+O campo `tempo_processamento_ms` inclui a duração da tentativa de inferência e varia conforme a máquina. O **[Guia para construir a solução do zero](docs/GUIA_REPRODUCAO.md)** explica o problema, a preparação dos dados e os passos para implementar uma solução semelhante em um projeto vazio.
 
 Ao terminar, pare o serviço com:
 
