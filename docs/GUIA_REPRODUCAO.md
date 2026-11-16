@@ -20,7 +20,7 @@ Isso define o escopo:
 - **Objetivo:** indicar risco e fornecer fatores que ajudem a priorizar o acompanhamento.
 - **Fora do escopo:** responder ao cidadão, conceder/negar acesso, avaliar o mérito da resposta ou determinar sanções.
 
-Leia o [Entendimento de Negócio da LAI](LAI_Entendimento_Negocio_v2.0.pdf) e o [PRD](PRD.md). O processo atual de priorização, a capacidade diária da equipe e metas de sucesso ainda não estão definidos nos documentos; registre essas questões como pendências para validação com usuários e responsáveis de negócio.
+Leia o [Entendimento de Negócio da LAI](LAI_Entendimento_Negocio.pdf) e o [PRD](PRD.md). O processo atual de priorização, a capacidade diária da equipe e metas de sucesso ainda não estão definidos nos documentos; registre essas questões como pendências para validação com usuários e responsáveis de negócio.
 
 ## 2. Defina t0 e evite data leakage
 
@@ -50,11 +50,11 @@ cd sic-lai
 uv init --python 3.11
 mkdir -p src/agent src/models tests data/raw data/processed
 uv add pandas scikit-learn
-uv add fastapi "uvicorn[standard]" pydantic pydantic-settings transformers torch accelerate
+uv add fastapi "uvicorn[standard]" pydantic pydantic-settings httpx
 uv add --dev pytest httpx ruff
 ```
 
-`pandas` e `scikit-learn` servem à exploração e a eventuais experimentos supervisionados. O serviço atual não carrega esses componentes para inferência. Gere e versione `uv.lock`; ignore `.venv/`, `.env`, caches, `data/raw/` e `data/processed/`. Crie `.env.example` somente com nomes de variáveis opcionais, sem credenciais ou valores sensíveis.
+`pandas` e `scikit-learn` servem à exploração e a eventuais experimentos supervisionados. O serviço atual não carrega esses componentes para inferência. Gere e versione `uv.lock`; ignore `.venv/`, `.env`, caches, `data/raw/` e `data/processed/`. Crie `.env.example` com `OPENROUTER_API_KEY=` e os padrões não sensíveis. Preencha a chave somente no `.env` local e não versione esse arquivo.
 
 Uma estrutura inicial possível:
 
@@ -68,10 +68,10 @@ sic-lai/
 │   ├── config.py           # configurações de ambiente
 │   ├── schemas.py          # contratos e proteção temporal
 │   ├── agent/
-│   │   ├── analyzer.py     # abstenção, heurísticas, SLM e fallback
+│   │   ├── analyzer.py     # abstenção, heurísticas, modelo remoto e fallback
 │   │   └── prompt.py       # instruções para saída estruturada
 │   └── models/
-│       └── loader.py       # carregamento singleton do modelo
+│       └── openrouter.py   # cliente HTTP assíncrono
 └── tests/
 ```
 
@@ -142,22 +142,22 @@ Defina o volume de alertas aceitável e os limites de métricas com o SIC. O ent
 
 ## 6. Escolha uma arquitetura para o escopo
 
-O caminho recomendado em aula foi **BentoML** para servir, **Google ADK** para agentes e **GitHub Actions** para automação quando necessário. Outras pilhas são permitidas. O projeto existente escolheu **FastAPI**, **Transformers** e Docker Compose: é um fluxo curto de validação, regras e uma inferência local, sem chamadas a ferramentas ou orquestração multiagente. Por isso ele não utiliza BentoML nem Google ADK. Atualmente também não há workflow de GitHub Actions.
+O caminho recomendado em aula foi **BentoML** para servir, **Google ADK** para agentes e **GitHub Actions** para automação quando necessário. Outras pilhas são permitidas. O projeto existente escolheu **FastAPI**, **HTTPX**, OpenRouter e Docker Compose: é um fluxo curto de validação, regras e uma inferência remota, sem chamadas a ferramentas ou orquestração multiagente. Por isso ele não utiliza BentoML nem Google ADK. Atualmente também não há workflow de GitHub Actions.
 
-O PRD registra uma proposta anterior e cita Qwen 1.5B em algumas partes; a implementação atual usa Qwen 0.5B. Use README e código-fonte para conferir o comportamento entregue, e trate o PRD como referência de requisitos, considerando essa divergência técnica.
+O PRD registra a proposta original com Qwen local; desde 16/11/2026 a implementação usa `nvidia/nemotron-3.5-super-vl:free` via OpenRouter. Use README e código-fonte para conferir o comportamento entregue, e trate o PRD como referência de requisitos, considerando essa divergência técnica.
 
 Para reproduzir o serviço atual, implemente o fluxo:
 
 1. Validar o payload e bloquear campos posteriores a t0.
 2. Abster-se quando os dados mínimos forem insuficientes.
 3. Aplicar heurísticas determinísticas nos padrões conhecidos.
-4. Para casos abertos, montar um prompt e chamar o SLM local `Qwen/Qwen2.5-0.5B-Instruct`.
+4. Para casos abertos, montar mensagens de chat e chamar `nvidia/nemotron-3.5-super-vl:free` via OpenRouter com JSON Schema.
 5. Interpretar e validar o JSON da geração; usar fallback heurístico quando houver falha.
 6. Entregar a recomendação ao servidor do SIC, sem decisão automática.
 
-O Qwen é distribuído no [Hugging Face](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct), sob licença Apache 2.0. Fixe dependências no `uv.lock`; para reproduzir também os pesos, registre a revisão específica do modelo utilizada.
+O [modelo escolhido](https://openrouter.ai/nvidia/nemotron-3.5-super-vl:free) é servido pela NVIDIA através do OpenRouter e anuncia suporte a saída estruturada. Configure `OPENROUTER_API_KEY` em `.env`. Fixe as dependências em `uv.lock`; registre o identificador do modelo e considere que disponibilidade e implementação do provedor remoto podem mudar.
 
-> **Limite da implementação existente:** ela não foi treinada com a base histórica descrita acima. As heurísticas usam scores definidos em código, e o SLM gera uma resposta estruturada a partir do prompt. Portanto, o score atual é indicativo, não uma probabilidade calibrada nem a saída de um classificador supervisionado. A experiência de treino e avaliação é uma etapa analítica adicional.
+> **Limite da implementação existente:** ela não foi treinada com a base histórica descrita acima. As heurísticas usam scores definidos em código, e o modelo remoto gera uma resposta estruturada a partir do prompt. Portanto, o score atual é indicativo, não uma probabilidade calibrada nem a saída de um classificador supervisionado. A experiência de treino e avaliação é uma etapa analítica adicional.
 
 ## 7. Implemente contrato, analisador e API
 
@@ -171,37 +171,37 @@ Antes da validação normal do schema, examine o payload bruto e rejeite `DataRe
 
 Se o órgão ou o detalhamento estiver vazio, ou o texto for insuficiente, retorne `INDETERMINADO`, score `0.0`, justificativa e recomendação de pedir esclarecimento. Para demais casos, responda com protocolo, nível (`ALTO`, `MEDIO`, `BAIXO` ou `INDETERMINADO`), score entre 0 e 1, fatores, recomendação e latência.
 
-### Orquestração de heurística e SLM
+### Orquestração de heurística e modelo remoto
 
 Separe o analisador em etapas explícitas:
 
 ```text
 payload -> validação t0 -> abstenção?
         -> regra conhecida? -> resultado heurístico
-        -> caso aberto -> prompt -> SLM local -> parse/validação JSON
+        -> caso aberto -> mensagens -> OpenRouter + JSON Schema -> validação Pydantic
         -> erro de inferência ou parse -> fallback heurístico
 ```
 
 As regras atuais cobrem padrões demonstrativos: pedidos extensos/históricos tendem a alto risco; documentos ostensivos, a baixo; extrações operacionais moderadas, a médio; os demais casos usam uma regra padrão. Justifique cada regra, não trate associação com um órgão como evidência suficiente e escreva um teste para cada caminho.
 
-Carregue tokenizer e modelo uma única vez em CPU. O prompt deve incluir apenas os campos permitidos em t0 e solicitar JSON. Trate a geração do LLM como entrada não confiável: extraia e valide o JSON, nível, score e tipos antes de compor a resposta.
+Use HTTPX assíncrono para não bloquear a API durante a chamada remota. Envie somente os campos selecionados em t0 e peça `response_format.type=json_schema`, `strict=true` e `provider.require_parameters=true`. Valide também localmente os campos obrigatórios, nível, score e tipos. Em caso de chave ausente, timeout, erro HTTP ou resposta inválida, aplique o fallback. Não registre a chave nem o corpo de erros do provedor.
 
 ### Endpoints e documentação viva
 
-Implemente `GET /health` e `POST /predict`. O endpoint de predição recebe o schema do pedido e retorna o schema de triagem. Documente os contratos via OpenAPI e mantenha exemplos de requisição e resposta no README. Um `/health` que só repete a configuração não comprova que o modelo foi carregado; deixe essa semântica clara ou implemente uma verificação real de prontidão.
+Implemente `GET /health` e `POST /predict`. O endpoint de predição recebe o schema do pedido e retorna o schema de triagem. Documente os contratos via OpenAPI e mantenha exemplos de requisição e resposta no README. O `/health` atual informa `device=remote` e status `healthy` ou `degraded` conforme a presença da chave, sempre com HTTP 200. Não consulta o provedor e não comprova validade da credencial nem disponibilidade remota.
 
 ## 8. Teste, empacote e automatize
 
-Crie testes que não dependam de baixar o Qwen: substitua o pipeline por um objeto de teste. Cubra pelo menos:
+Crie testes que não dependam de internet ou credenciais reais: use transporte HTTP simulado. Cubra pelo menos:
 
 1. Caso complexo classificado como risco alto.
 2. Pedido simples de informação pública classificado como risco baixo.
 3. Demanda operacional moderada.
 4. Campo posterior a t0 rejeitado com HTTP 422.
 5. Detalhamento insuficiente retornando `INDETERMINADO`.
-6. Falha do SLM ou JSON inválido acionando o fallback.
+6. Falha da API remota ou JSON inválido acionando o fallback.
 
-Rode `uv run pytest` e `uv run ruff check .`. Se usar integração contínua, configure GitHub Actions para executar essas verificações. Para Docker, cacheie os pesos durante o build, exponha a porta da API e não exija chave de um serviço externo.
+Rode `uv run python -m unittest discover -s tests -v` e `uv run ruff check .`. Se usar integração contínua, configure GitHub Actions para executar essas verificações. Para Docker, instale apenas as dependências HTTP/API, exponha a porta 8000 e injete a chave em runtime. Exclua `.env` do contexto de build com `.dockerignore`; não baixe pesos.
 
 ## 9. Compare com a implementação deste repositório
 
@@ -211,9 +211,9 @@ Use os módulos existentes para comparar a solução independente com a entregue
 | --- | --- |
 | Endpoints `/health` e `/predict` | `src/app.py` |
 | Schema e campos bloqueados | `src/schemas.py` |
-| Heurísticas, chamada ao SLM e fallback | `src/agent/analyzer.py` |
+| Heurísticas, chamada remota e fallback | `src/agent/analyzer.py` |
 | Prompt | `src/agent/prompt.py` |
-| Carregamento do Qwen | `src/models/loader.py` |
+| Cliente OpenRouter e validação de resposta | `src/models/openrouter.py` |
 | Configuração | `src/config.py` |
 
 O serviço existente não contém a extração/preparação da base histórica nem o treinamento ou a avaliação de um classificador. Distinguir isso do estudo de dados é parte da reprodução correta do projeto.

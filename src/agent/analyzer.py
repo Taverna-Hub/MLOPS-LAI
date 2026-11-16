@@ -1,13 +1,11 @@
 """Lógica analítica de triagem e cálculo de risco em pedidos da LAI."""
 
-import json
 import logging
-import re
 import time
 from typing import Any
 
-from src.agent.prompt import build_analysis_prompt
-from src.models.loader import get_pipeline
+from src.agent.prompt import build_analysis_messages
+from src.models.openrouter import OpenRouterError, generate_analysis
 from src.schemas import NivelRiscoEnum, PedidoLAIRequest, TriagemLAIResponse
 
 logger = logging.getLogger("sic_lai.analyzer")
@@ -101,18 +99,7 @@ def _classificar_heuristicamente(pedido: PedidoLAIRequest) -> dict[str, Any]:
     }
 
 
-def _extrair_json_resposta(raw_text: str) -> dict[str, Any] | None:
-    """Tenta extrair objeto JSON delimitado por chaves no texto retornado pelo modelo."""
-    match = re.search(r"\{.*\}", raw_text, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(0))
-        except Exception:
-            pass
-    return None
-
-
-def analisar_pedido(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
+async def analisar_pedido(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
     """Executa a triagem e análise de risco do pedido no instante t0."""
     inicio = time.perf_counter()
 
@@ -154,47 +141,25 @@ def analisar_pedido(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
             tempo_processamento_ms=duracao_ms,
         )
 
-    # 3. Para demandas genéricas/abertas, executa inferência pelo SLM se disponível
-    pipeline_slm = get_pipeline()
-    if pipeline_slm is not None:
-        try:
-            prompt = build_analysis_prompt(
-                protocolo=pedido.protocolo,
-                orgao_destinatario=pedido.orgao_destinatario,
-                origem_solicitacao=pedido.origem_solicitacao,
-                forma_resposta=pedido.forma_resposta,
-                resumo_solicitacao=pedido.resumo_solicitacao,
-                detalhamento_solicitacao=pedido.detalhamento_solicitacao,
-                prazo_atendimento=str(pedido.prazo_atendimento)
-                if pedido.prazo_atendimento
-                else None,
-            )
-            outputs = pipeline_slm(
-                prompt,
-                max_new_tokens=256,
-                temperature=0.2,
-                do_sample=False,
-            )
-            raw_gen = outputs[0]["generated_text"][len(prompt) :]
-            parsed = _extrair_json_resposta(raw_gen)
-            if parsed and "nivel_risco" in parsed and "score_risco" in parsed:
-                duracao_ms = round((time.perf_counter() - inicio) * 1000, 2)
-                return TriagemLAIResponse(
-                    protocolo=pedido.protocolo,
-                    nivel_risco=NivelRiscoEnum(parsed["nivel_risco"].upper()),
-                    score_risco=float(parsed["score_risco"]),
-                    fatores_risco=parsed.get(
-                        "fatores_risco", resultado_heuristica["fatores_risco"]
-                    ),
-                    recomendacao_sic=parsed.get(
-                        "recomendacao_sic", resultado_heuristica["recomendacao_sic"]
-                    ),
-                    tempo_processamento_ms=duracao_ms,
-                )
-        except Exception as exc:
-            logger.warning(
-                "Falha durante inferência do SLM, utilizando heurística analítica: %s", exc
-            )
+    # 3. Para demandas abertas, consulta o modelo remoto pelo OpenRouter.
+    try:
+        messages = build_analysis_messages(
+            protocolo=pedido.protocolo,
+            orgao_destinatario=pedido.orgao_destinatario,
+            origem_solicitacao=pedido.origem_solicitacao,
+            forma_resposta=pedido.forma_resposta,
+            resumo_solicitacao=pedido.resumo_solicitacao,
+            detalhamento_solicitacao=pedido.detalhamento_solicitacao,
+            prazo_atendimento=str(pedido.prazo_atendimento) if pedido.prazo_atendimento else None,
+        )
+        analise = await generate_analysis(messages)
+        return TriagemLAIResponse(
+            protocolo=pedido.protocolo,
+            **analise.model_dump(),
+            tempo_processamento_ms=round((time.perf_counter() - inicio) * 1000, 2),
+        )
+    except OpenRouterError as exc:
+        logger.warning("Inferência remota indisponível; utilizando fallback heurístico: %s", exc)
 
     # 4. Fallback analítico seguro
     duracao_ms = round((time.perf_counter() - inicio) * 1000, 2)

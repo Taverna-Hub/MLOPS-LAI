@@ -1,5 +1,6 @@
 """Configurações da aplicação utilizando Pydantic Settings."""
 
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,12 +9,12 @@ class Settings(BaseSettings):
 
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    MODEL_NAME: str = "Qwen/Qwen2.5-0.5B-Instruct"
-    DEVICE: str = "cpu"
+    MODEL_NAME: str = "nvidia/nemotron-3.5-super-vl:free"
     LOG_LEVEL: str = "info"
     VERSION: str = "1.0.0"
-    USE_SLM: bool = True
-    LOCAL_FILES_ONLY: bool = False
+    OPENROUTER_API_KEY: SecretStr = SecretStr("")
+    OPENROUTER_TIMEOUT_SECONDS: float = Field(default=120.0, gt=0)
+    OPENROUTER_MAX_TOKENS: int = Field(default=4096, gt=0)
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -21,6 +22,10 @@ class Settings(BaseSettings):
         case_sensitive=True,
         extra="ignore",
     )
+
+    @property
+    def openrouter_configured(self) -> bool:
+        return bool(self.OPENROUTER_API_KEY.get_secret_value().strip())
 
 
 settings = Settings()

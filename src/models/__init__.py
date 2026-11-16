@@ -1,5 +1,5 @@
-"""Módulo de carregamento e gestão de modelos de linguagem."""
+"""Integração com o modelo remoto via OpenRouter."""
 
-from src.models.loader import get_pipeline, load_model
+from src.models.openrouter import OpenRouterError, generate_analysis
 
-__all__ = ["get_pipeline", "load_model"]
+__all__ = ["OpenRouterError", "generate_analysis"]

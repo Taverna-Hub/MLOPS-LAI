@@ -1,4 +1,7 @@
 # Product Requirement Document (PRD) — Agente SIC-LAI
+
+> **Atualização de implementação — 16/11/2026:** este documento preserva a especificação original da entrega com inferência local. A versão atual usa `nvidia/nemotron-3.5-super-vl:free` via OpenRouter, com JSON Schema, chave em `.env` e cliente HTTP assíncrono; não carrega Qwen, Torch ou Transformers. As regras específicas, a abstenção e o fallback heurístico foram preservados. As referências abaixo a execução offline, CPU, modelo local e ausência de credencial externa são históricas. Consulte o [README](../README.md) para executar a versão atual.
+
 ## Triagem Preditiva e Análise de Risco de Atraso em Pedidos da Lei de Acesso à Informação (LAI)
 
 - **Versão:** 1.0.0

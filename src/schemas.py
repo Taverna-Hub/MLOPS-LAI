@@ -62,6 +62,17 @@ class PedidoLAIRequest(BaseModel):
         return data
 
 
+class AnaliseRisco(BaseModel):
+    """Conteúdo obrigatório retornado pelo modelo remoto, antes de compor a resposta HTTP."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    nivel_risco: NivelRiscoEnum
+    score_risco: float = Field(..., ge=0.0, le=1.0, allow_inf_nan=False)
+    fatores_risco: list[str] = Field(..., min_length=1)
+    recomendacao_sic: str = Field(..., min_length=1)
+
+
 class TriagemLAIResponse(BaseModel):
     """Esquema de resposta da análise de triagem e risco em t0."""
 

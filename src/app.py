@@ -9,7 +9,6 @@ from fastapi.responses import JSONResponse
 
 from src.agent.analyzer import analisar_pedido
 from src.config import settings
-from src.models.loader import get_pipeline
 from src.schemas import (
     FORBIDDEN_T0_FIELDS,
     HealthResponse,
@@ -27,15 +26,10 @@ logger = logging.getLogger("sic_lai.api")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Ciclo de vida da aplicação: inicializa o pipeline de modelo."""
-    logger.info(
-        "Iniciando Agente SIC-LAI (Modelo: %s, Device: %s)...", settings.MODEL_NAME, settings.DEVICE
-    )
-    # Inicialização assíncrona ou lazy do pipeline
-    try:
-        get_pipeline()
-    except Exception as exc:
-        logger.warning("Pipeline de IA não inicializado no startup: %s", exc)
+    """Inicia o serviço sem carregar pesos nem consultar o provedor remoto."""
+    logger.info("Iniciando Agente SIC-LAI (OpenRouter, modelo: %s)...", settings.MODEL_NAME)
+    if not settings.openrouter_configured:
+        logger.warning("OPENROUTER_API_KEY ausente: pedidos abertos usarão fallback heurístico.")
     yield
     logger.info("Encerrando Agente SIC-LAI...")
 
@@ -112,15 +106,15 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     "/health",
     response_model=HealthResponse,
     tags=["Diagnóstico"],
-    summary="Verifica prontidão do serviço e modelo",
+    summary="Verifica o serviço e a configuração da inferência remota",
 )
 async def health_check() -> HealthResponse:
     """Retorna o status operacional do container e o modelo configurado."""
     return HealthResponse(
-        status="healthy",
+        status="healthy" if settings.openrouter_configured else "degraded",
         version=settings.VERSION,
         model=settings.MODEL_NAME,
-        device=settings.DEVICE,
+        device="remote",
     )
 
 
@@ -132,4 +126,4 @@ async def health_check() -> HealthResponse:
 )
 async def predict(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
     """Recebe um pedido no momento inicial t0 e calcula o risco de descumprimento de prazo."""
-    return analisar_pedido(pedido)
+    return await analisar_pedido(pedido)

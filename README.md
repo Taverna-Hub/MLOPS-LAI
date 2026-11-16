@@ -1,134 +1,152 @@
 # Agente SIC-LAI
 
-Microserviço local de triagem de Pedidos de Acesso à Informação (PAI). No momento do protocolo (**t0**), estima um nível indicativo de risco de atraso e apresenta fatores de risco e uma recomendação para apoiar o acompanhamento pelo Serviço de Informação ao Cidadão (SIC).
+Microserviço de triagem de Pedidos de Acesso à Informação (PAI). No momento do protocolo (**t0**), estima um nível indicativo de risco de atraso, apresenta fatores de risco e recomendações para apoiar o Serviço de Informação ao Cidadão (SIC).
 
 > **A decisão permanece humana.** O serviço não responde ao cidadão, não avalia o mérito do pedido e não toma decisões administrativas.
 
-## O que o serviço faz
-
-- `GET /health`: informa o estado e a configuração do serviço.
-- `POST /predict`: recebe os dados do pedido disponíveis em t0 e retorna `nivel_risco`, `score_risco`, `fatores_risco`, `recomendacao_sic` e `tempo_processamento_ms`.
-- Rejeita com HTTP 422 campos que representam eventos posteriores a t0: `data_resposta`, `decisao`, `especificacao_decisao`, `situacao`, `foi_prorrogado` e `foi_reencaminhado`.
-- Abstém-se quando o órgão ou o detalhamento estão vazios ou quando o detalhamento tem menos de cinco caracteres.
-
 ## Arquitetura e modelo
 
-O serviço usa **FastAPI**, **Pydantic v2** e inferência local em CPU com `Qwen/Qwen2.5-0.5B-Instruct`. A análise combina regras heurísticas para alguns padrões reconhecidos e o SLM para solicitações mais abertas, com fallback heurístico se a inferência falhar.
+A API roda localmente com **FastAPI** e **Pydantic v2**. Para pedidos abertos, consulta o OpenRouter usando **`nvidia/nemotron-3.5-super-vl:free`**, com mensagens de sistema/usuário e saída estruturada por **JSON Schema**. Não há download de pesos, inferência local, Torch ou Transformers.
 
-Os scores atuais são indicativos: as heurísticas usam valores definidos em código e o projeto não inclui treinamento nem calibração estatística do modelo com dados históricos. A linhagem do SLM é o repositório [`Qwen/Qwen2.5-0.5B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct), licença Apache 2.0.
+O [Nemotron 3.5 Super VL no OpenRouter](https://openrouter.ai/nvidia/nemotron-3.5-super-vl:free) possui 120 bilhões de parâmetros totais, 12 bilhões ativos e contexto de 1 milhão de tokens. O endpoint da NVIDIA anuncia suporte a `response_format` e `structured_outputs`. A chamada inclui `strict: true` e `provider.require_parameters: true` para exigir um endpoint compatível. A aplicação também valida a resposta com Pydantic; JSON Schema não garante que a avaliação de risco esteja correta.
 
-## Código-fonte
+O identificador `:free` tem preço de tokens de entrada e saída igual a zero, mas exige uma chave OpenRouter e está sujeito a [limites de uso](https://openrouter.ai/docs/api/reference/limits) e disponibilidade do provedor. O serviço não seleciona modelos pagos como alternativa.
 
-```text
-src/
-├── app.py              # API FastAPI: /health e /predict
-├── config.py           # Configuração por variáveis de ambiente
-├── schemas.py          # Contratos Pydantic e validação anti-leakage
-├── agent/
-│   ├── analyzer.py     # Regras, inferência e fallback
-│   └── prompt.py       # Prompt do SLM
-└── models/
-    └── loader.py       # Carregamento do Qwen e pipeline local
-```
+Nos pedidos enviados ao modelo, órgão, protocolo, canal, forma de resposta, resumo, detalhamento e prazo opcional saem da máquina e são processados pelo provedor. O endpoint gratuito da NVIDIA orienta não enviar informações confidenciais nem dados pessoais; use exemplos fictícios ou anonimizados.
 
-O `pyproject.toml` e o `uv.lock` definem as dependências; `Dockerfile` e `docker-compose.yml` empacotam e executam o serviço; `justfile` reúne atalhos de desenvolvimento.
+O analisador preserva o fluxo híbrido anterior:
 
-## Início rápido
+1. Valida o contrato e bloqueia campos posteriores a t0.
+2. Retorna `INDETERMINADO` para órgão vazio ou detalhamento com menos de cinco caracteres úteis.
+3. Devolve diretamente as regras específicas de risco `ALTO` e `BAIXO`, e `MEDIO` quando o órgão contém “INSS”. Esses casos não consultam OpenRouter.
+4. Para outros pedidos, consulta o modelo remoto e valida o resultado.
+5. Usa fallback heurístico se a chave estiver ausente, houver timeout, erro HTTP, geração incompleta ou resposta inválida.
 
-Com Docker Engine e Docker Compose v2 instalados, clone o repositório e inicie o serviço:
+Os scores são indicativos. As regras usam valores definidos em código e não há treinamento nem calibração estatística com dados históricos. Uma resposta HTTP 200 também pode ter origem no fallback.
+
+## Contrato HTTP
+
+- `POST /predict`: retorna `protocolo`, `nivel_risco`, `score_risco`, `fatores_risco`, `recomendacao_sic` e `tempo_processamento_ms`.
+- `GET /health`: retorna versão, modelo e `device: "remote"`. O status é `healthy` quando há chave configurada e `degraded` quando falta a chave. O HTTP permanece 200: é uma verificação do serviço e da configuração, não uma chamada de teste ao OpenRouter nem uma validação da chave.
+- `/docs` e `/redoc`: documentação dos contratos.
+- Campos `data_resposta`, `decisao`, `especificacao_decisao`, `situacao`, `foi_prorrogado` e `foi_reencaminhado` são rejeitados com HTTP 422.
+
+## Início rápido com Docker
+
+Requer Docker Engine e Docker Compose v2. Os comandos abaixo usam Bash; no Windows, use Git Bash/WSL ou faça as requisições pelo Swagger.
 
 ```bash
 git clone https://github.com/Taverna-Hub/MLOPS-LAI.git
 cd MLOPS-LAI
-docker compose up --build -d
+cp .env.example .env
 ```
 
-A primeira construção leva aproximadamente **5–15 minutos**, conforme máquina e conexão, e baixa cerca de 1 GB de pesos do modelo. Não é necessário instalar Python no host para este caminho. A API fica em `http://localhost:8000` e o Swagger em [`http://localhost:8000/docs`](http://localhost:8000/docs).
-
-Verifique se a API respondeu:
+No PowerShell, a cópia equivalente é `Copy-Item .env.example .env`. Edite `.env` e preencha `OPENROUTER_API_KEY` com uma chave criada em [OpenRouter — API keys](https://openrouter.ai/settings/keys). O arquivo `.env` é ignorado pelo Git e pelo contexto de build Docker.
 
 ```bash
+docker compose up --build -d
 curl http://localhost:8000/health
 ```
 
-### Exemplos de predição
+A API fica em `http://localhost:8000`, e o Swagger em [http://localhost:8000/docs](http://localhost:8000/docs). A inferência remota requer internet. Sem chave, o serviço continua disponível com heurísticas e fallback.
 
-Os comandos `curl` abaixo são para Bash; no Windows, execute-os no Git Bash ou WSL. Também é possível enviar os mesmos JSONs pelo Swagger em [`http://localhost:8000/docs`](http://localhost:8000/docs).
-
-O analisador sempre calcula um resultado heurístico. Ele o devolve diretamente para os casos específicos de risco `ALTO` e `BAIXO`, e para risco `MEDIO` quando o órgão contém “INSS”. Nos demais casos, tenta consultar a Qwen. Se a geração falhar ou não respeitar o contrato da resposta, usa o resultado heurístico como fallback. Assim, uma requisição pode consultar a Qwen sem que a resposta final tenha sido produzida por ela.
-
-#### Exemplo 1 — Regra heurística, sem chamada à Qwen
-
-O órgão e os termos do pedido correspondem à regra de risco alto.
+### Pedido aberto: consulta ao OpenRouter
 
 ```bash
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
   -d '{
-    "protocolo": "PAI-EXEMPLO-001",
-    "data_registro": "2026-09-21T10:00:00Z",
+    "protocolo": "PAI-REMOTO-001",
+    "data_registro": "2026-11-16T10:00:00Z",
+    "orgao_destinatario": "Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renováveis (IBAMA)",
+    "origem_solicitacao": "Internet",
+    "forma_resposta": "E-mail",
+    "resumo_solicitacao": "Etapas para autorização de visita técnica",
+    "detalhamento_solicitacao": "Solicito informar quais documentos são necessários para pedir autorização de visita técnica a uma unidade de conservação federal, qual setor recebe o pedido e como acompanhar a análise."
+  }'
+```
+
+A resposta e a latência variam conforme o provedor. Exemplo ilustrativo do contrato, sem representar uma execução real:
+
+```json
+{
+  "protocolo": "PAI-REMOTO-001",
+  "nivel_risco": "MEDIO",
+  "score_risco": 0.5,
+  "fatores_risco": ["Necessidade de identificar o fluxo e a unidade responsável"],
+  "recomendacao_sic": "Confirmar o encaminhamento com a unidade responsável e acompanhar o aceite.",
+  "tempo_processamento_ms": 1500.0
+}
+```
+
+O tempo inclui a tentativa de chamada remota quando ela ocorre. Para demonstrar o fallback por falta de credencial, deixe a chave vazia e recrie o serviço antes de reenviar esse pedido: o retorno será `MEDIO`, score `0.50`. Uma chave inválida ou limite HTTP 429 também aciona fallback; o motivo é registrado no console sem imprimir a chave ou o corpo da resposta do provedor.
+
+### Regra específica: sem chamada remota
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "protocolo": "PAI-REGRA-001",
+    "data_registro": "2026-11-16T10:00:00Z",
     "orgao_destinatario": "Ministério da Saúde",
     "origem_solicitacao": "Internet",
     "forma_resposta": "E-mail",
     "resumo_solicitacao": "Microdados de contratos de vacinação",
-    "detalhamento_solicitacao": "Solicito notas fiscais e tabelas orçamentárias de 2020 a 2024.",
-    "prazo_atendimento": "2026-10-11"
+    "detalhamento_solicitacao": "Solicito notas fiscais e tabelas orçamentárias de 2020 a 2024."
   }'
 ```
 
-Este exemplo retorna `ALTO` e score `0.88` pela regra heurística; a Qwen não é chamada para analisar esta requisição.
-
-#### Exemplo 2 — Pedido aberto, consulta à Qwen
-
-Este pedido não corresponde às regras específicas por texto ou órgão e segue para a inferência local da Qwen.
-
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "protocolo": "PAI-QWEN-01",
-    "data_registro": "2026-10-12T11:00:00Z",
-    "orgao_destinatario": "Instituto Brasileiro do Meio Ambiente e dos Recursos Naturais Renováveis (IBAMA)",
-    "origem_solicitacao": "Internet",
-    "forma_resposta": "E-mail",
-    "resumo_solicitacao": "Etapas para autorização de visita técnica em unidade de conservação",
-    "detalhamento_solicitacao": "Solicito informar quais documentos são necessários para pedir autorização de visita técnica a uma unidade de conservação federal, qual setor recebe o pedido e como o interessado pode acompanhar a análise."
-  }'
-```
-
-Na execução de teste, a Qwen retornou `MEDIO`, score `0.8`, fatores explicativos e uma recomendação. A resposta gerada e a latência podem variar entre execuções; o score é indicativo, não uma probabilidade calibrada.
-
-#### Exemplo 3 — Consulta à Qwen com fallback heurístico
-
-Este pedido também não corresponde às regras específicas, então a aplicação tenta consultar a Qwen. Na execução de teste, a resposta gerada não respeitou o tipo esperado para os fatores de risco; a validação falhou e a API devolveu o fallback heurístico (`MEDIO`, score `0.50`).
-
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "protocolo": "PAI-QWEN-02",
-    "data_registro": "2026-10-12T11:05:00Z",
-    "orgao_destinatario": "Agência Nacional de Energia Elétrica (ANEEL)",
-    "origem_solicitacao": "Internet",
-    "forma_resposta": "E-mail",
-    "resumo_solicitacao": "Critérios de fiscalização de medidores residenciais",
-    "detalhamento_solicitacao": "Solicito os critérios utilizados para selecionar instalações residenciais para inspeção, o fluxo administrativo aplicado quando a inspeção identifica divergência e os prazos previstos para comunicar o resultado ao consumidor."
-  }'
-```
-
-O campo `tempo_processamento_ms` inclui a duração da tentativa de inferência e varia conforme a máquina. O **[Guia para construir a solução do zero](docs/GUIA_REPRODUCAO.md)** explica o problema, a preparação dos dados e os passos para implementar uma solução semelhante em um projeto vazio.
-
-Ao terminar, pare o serviço com:
+Retorna `ALTO`, score `0.88`, pela regra existente. Para parar o serviço:
 
 ```bash
 docker compose down
 ```
 
+## Configuração e desenvolvimento
+
+| Variável | Padrão | Finalidade |
+| --- | --- | --- |
+| `OPENROUTER_API_KEY` | Vazio | Credencial para inferência remota |
+| `MODEL_NAME` | `nvidia/nemotron-3.5-super-vl:free` | Modelo OpenRouter, que deve aceitar JSON Schema |
+| `OPENROUTER_TIMEOUT_SECONDS` | `120` | Timeout de cada operação de rede |
+| `OPENROUTER_MAX_TOKENS` | `4096` | Limite da geração, incluindo raciocínio |
+| `LOG_LEVEL` | `info` | Nível dos logs |
+
+As antigas opções `DEVICE`, `USE_SLM` e `LOCAL_FILES_ONLY` foram removidas. Para executar fora do Docker, instale Python 3.11+ e `uv`, configure `.env` e rode:
+
+```bash
+uv sync --frozen --extra dev
+uv run uvicorn src.app:app --host 0.0.0.0 --port 8000
+```
+
+Verificações, sem consumir a API:
+
+```bash
+uv run python -m unittest discover -s tests -v
+uv run ruff check .
+uv run ruff format src tests --check
+```
+
+Os testes usam transporte HTTP simulado para verificar JSON Schema, autenticação, erros, fallback e preservação das regras. Não substituem uma avaliação de qualidade com pedidos representativos nem uma chamada real com a chave do usuário.
+
+```text
+src/
+├── app.py              # API FastAPI
+├── config.py           # Configuração e chave protegida por SecretStr
+├── schemas.py          # Contratos e validação anti-leakage
+├── agent/
+│   ├── analyzer.py     # Regras, inferência remota e fallback
+│   └── prompt.py       # Mensagens de sistema e usuário
+└── models/
+    └── openrouter.py   # Cliente HTTP assíncrono e validação da resposta
+```
+
 ## Documentação do projeto
 
-- [`docs/GUIA_REPRODUCAO.md`](docs/GUIA_REPRODUCAO.md) — roteiro para entender o problema e construir uma solução semelhante do zero.
-- [`docs/PRD.md`](docs/PRD.md) — requisitos e escopo do produto.
-- [`docs/LAI_Entendimento_Negocio.pdf`](docs/LAI_Entendimento_Negocio.pdf) — contexto e entendimento de negócio da LAI.
+- [`docs/GUIA_REPRODUCAO.md`](docs/GUIA_REPRODUCAO.md): guia de negócio, dados e implementação.
+- [`docs/PRD.md`](docs/PRD.md): especificação original da entrega local; veja a nota de atualização no início.
+- [`docs/LAI_Entendimento_Negocio.pdf`](docs/LAI_Entendimento_Negocio.pdf): contexto de negócio.
 
 ## Uso de Inteligência Artificial
 
