@@ -25,6 +25,7 @@ def run(base_url, rounds, output, cases_path=None):
                     "case": case["name"],
                     "expected_source": case["kind"],
                     "round": round_number + 1,
+                    "expected_status": case["expected_status"],
                 }
                 try:
                     r = client.post("/predict", json=case["payload"])

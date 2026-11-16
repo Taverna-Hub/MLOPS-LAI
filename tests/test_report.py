@@ -3,9 +3,12 @@ import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
+from unittest.mock import patch
 
+import httpx
 from pydantic import ValidationError
 
+from monitoring.generate_load import run
 from monitoring.report import describe, percentile, read_records, summarize
 from src.agent.analyzer import _classificar_heuristicamente
 from src.monitoring import new_record
@@ -13,6 +16,21 @@ from src.schemas import PedidoLAIRequest
 
 
 class ReportTests(unittest.TestCase):
+    def test_network_failures_keep_expected_status_for_failure_count(self):
+        def handler(request):
+            if request.url.path == "/metrics":
+                return httpx.Response(200, text="# metrics\n")
+            raise httpx.ConnectError("synthetic failure")
+
+        client = httpx.Client(base_url="http://test", transport=httpx.MockTransport(handler))
+        with tempfile.TemporaryDirectory() as tmp:
+            with (
+                patch("monitoring.generate_load.httpx.Client", return_value=client),
+                patch("builtins.print"),
+            ):
+                rows = run("http://test", 1, tmp)
+        self.assertEqual(sum(r.get("status_code") != r.get("expected_status") for r in rows), 30)
+
     def test_load_has_exactly_three_open_requests(self):
         cases = json.loads(Path("monitoring/cases.json").read_text(encoding="utf-8"))["cases"]
         self.assertEqual(

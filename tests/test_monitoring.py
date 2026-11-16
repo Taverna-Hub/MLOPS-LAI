@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -165,6 +166,23 @@ class LoggingTests(unittest.TestCase):
         finally:
             other.close()
         self.assertEqual(self.records(), [{"n": 1}, {"n": 2}])
+
+    def test_rotation_accounts_for_platform_line_endings(self):
+        path = Path(self.tmp.name) / "boundary.jsonl"
+        event = {"category": "Órgão"}
+        size = len(
+            (json.dumps(event, ensure_ascii=False, separators=(",", ":")) + os.linesep).encode(
+                "utf-8"
+            )
+        )
+        sink = JsonlSink(path, max_bytes=2 * size, backups=5)
+        try:
+            sink.write(event)
+            sink.write(event)
+        finally:
+            sink.close()
+        self.assertEqual(path.stat().st_size, size)
+        self.assertEqual(Path(str(path) + ".1").stat().st_size, size)
 
 
 class ConcurrencyTests(unittest.IsolatedAsyncioTestCase):

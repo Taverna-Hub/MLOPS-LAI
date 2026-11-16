@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 import time
 from contextvars import ContextVar
 from datetime import datetime, timezone
@@ -28,7 +29,8 @@ class ByteRotatingHandler(RotatingFileHandler):
         if self.stream is None:
             self.stream = self._open()
         self.stream.seek(0, 2)
-        size = len((self.format(record) + self.terminator).encode("utf-8"))
+        # TextIO traduz o terminador para CRLF no Windows e LF no Linux.
+        size = len((self.format(record) + os.linesep).encode("utf-8"))
         return self.stream.tell() > 0 and self.stream.tell() + size >= self.maxBytes
 
 
