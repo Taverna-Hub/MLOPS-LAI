@@ -5,10 +5,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+from prometheus_client import CONTENT_TYPE_LATEST
 
 from src.agent.analyzer import analisar_pedido
 from src.config import settings
+from src.metrics import Metrics
 from src.monitoring import MonitoringMiddleware, update_trace
 from src.schemas import (
     FORBIDDEN_T0_FIELDS,
@@ -46,7 +48,16 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
-app.add_middleware(MonitoringMiddleware)
+app.state.monitoring_metrics = Metrics()
+app.add_middleware(MonitoringMiddleware, observer=app.state.monitoring_metrics.observe)
+
+
+@app.get("/metrics", tags=["Diagnóstico"], summary="Métricas em formato Prometheus")
+async def metrics() -> Response:
+    return Response(
+        content=app.state.monitoring_metrics.render(),
+        headers={"Content-Type": CONTENT_TYPE_LATEST},
+    )
 
 
 @app.exception_handler(TemporalLeakageError)
