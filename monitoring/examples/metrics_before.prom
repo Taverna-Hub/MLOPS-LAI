@@ -1,0 +1,216 @@
+# HELP sic_lai_http_requests_total Atendimentos HTTP concluídos
+# TYPE sic_lai_http_requests_total counter
+# HELP sic_lai_http_duration_seconds Latência HTTP completa
+# TYPE sic_lai_http_duration_seconds histogram
+# HELP sic_lai_http_request_bytes Bytes do corpo efetivamente recebido
+# TYPE sic_lai_http_request_bytes histogram
+# HELP sic_lai_analysis_duration_seconds Tempo de análise
+# TYPE sic_lai_analysis_duration_seconds histogram
+# HELP sic_lai_openrouter_duration_seconds Tempo de uma tentativa de rede OpenRouter
+# TYPE sic_lai_openrouter_duration_seconds histogram
+sic_lai_openrouter_duration_seconds_bucket{le="0.001"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="0.005"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="0.01"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="0.05"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="0.1"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="0.5"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="1.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="2.5"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="5.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="10.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="20.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="30.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="60.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="120.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="300.0"} 0.0
+sic_lai_openrouter_duration_seconds_bucket{le="+Inf"} 0.0
+sic_lai_openrouter_duration_seconds_count 0.0
+sic_lai_openrouter_duration_seconds_sum 0.0
+# HELP sic_lai_openrouter_duration_seconds_created Tempo de uma tentativa de rede OpenRouter
+# TYPE sic_lai_openrouter_duration_seconds_created gauge
+sic_lai_openrouter_duration_seconds_created 1.79486761960775e+09
+# HELP sic_lai_results_total Origem do resultado de predição
+# TYPE sic_lai_results_total counter
+sic_lai_results_total{source="heuristica"} 0.0
+sic_lai_results_total{source="modelo_remoto"} 0.0
+sic_lai_results_total{source="fallback"} 0.0
+sic_lai_results_total{source="abstencao"} 0.0
+# HELP sic_lai_results_created Origem do resultado de predição
+# TYPE sic_lai_results_created gauge
+sic_lai_results_created{source="heuristica"} 1.794867619607824e+09
+sic_lai_results_created{source="modelo_remoto"} 1.794867619607836e+09
+sic_lai_results_created{source="fallback"} 1.794867619607844e+09
+sic_lai_results_created{source="abstencao"} 1.79486761960785e+09
+# HELP sic_lai_fallbacks_total Fallbacks por motivo
+# TYPE sic_lai_fallbacks_total counter
+sic_lai_fallbacks_total{reason="not_configured"} 0.0
+sic_lai_fallbacks_total{reason="http_error"} 0.0
+sic_lai_fallbacks_total{reason="timeout"} 0.0
+sic_lai_fallbacks_total{reason="network_error"} 0.0
+sic_lai_fallbacks_total{reason="invalid_output"} 0.0
+sic_lai_fallbacks_total{reason="incomplete_output"} 0.0
+sic_lai_fallbacks_total{reason="unknown"} 0.0
+# HELP sic_lai_fallbacks_created Fallbacks por motivo
+# TYPE sic_lai_fallbacks_created gauge
+sic_lai_fallbacks_created{reason="not_configured"} 1.7948676196078556e+09
+sic_lai_fallbacks_created{reason="http_error"} 1.794867619607861e+09
+sic_lai_fallbacks_created{reason="timeout"} 1.794867619607868e+09
+sic_lai_fallbacks_created{reason="network_error"} 1.7948676196078732e+09
+sic_lai_fallbacks_created{reason="invalid_output"} 1.794867619607878e+09
+sic_lai_fallbacks_created{reason="incomplete_output"} 1.7948676196078825e+09
+sic_lai_fallbacks_created{reason="unknown"} 1.7948676196078868e+09
+# HELP sic_lai_remote_schema_total Respostas HTTP 2xx por conformidade ao contrato
+# TYPE sic_lai_remote_schema_total counter
+sic_lai_remote_schema_total{result="valid"} 0.0
+sic_lai_remote_schema_total{result="invalid"} 0.0
+# HELP sic_lai_remote_schema_created Respostas HTTP 2xx por conformidade ao contrato
+# TYPE sic_lai_remote_schema_created gauge
+sic_lai_remote_schema_created{result="valid"} 1.7948676196078918e+09
+sic_lai_remote_schema_created{result="invalid"} 1.7948676196078966e+09
+# HELP sic_lai_risk_levels_total Resultados por nível de risco
+# TYPE sic_lai_risk_levels_total counter
+sic_lai_risk_levels_total{level="BAIXO"} 0.0
+sic_lai_risk_levels_total{level="MEDIO"} 0.0
+sic_lai_risk_levels_total{level="ALTO"} 0.0
+sic_lai_risk_levels_total{level="INDETERMINADO"} 0.0
+# HELP sic_lai_risk_levels_created Resultados por nível de risco
+# TYPE sic_lai_risk_levels_created gauge
+sic_lai_risk_levels_created{level="BAIXO"} 1.7948676196079106e+09
+sic_lai_risk_levels_created{level="MEDIO"} 1.7948676196079159e+09
+sic_lai_risk_levels_created{level="ALTO"} 1.7948676196079204e+09
+sic_lai_risk_levels_created{level="INDETERMINADO"} 1.7948676196079245e+09
+# HELP sic_lai_input_summary_chars Caracteres no resumo validado
+# TYPE sic_lai_input_summary_chars histogram
+sic_lai_input_summary_chars_bucket{le="0.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="50.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="100.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="250.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="500.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="1000.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="2500.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="5000.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="10000.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="25000.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="50000.0"} 0.0
+sic_lai_input_summary_chars_bucket{le="+Inf"} 0.0
+sic_lai_input_summary_chars_count 0.0
+sic_lai_input_summary_chars_sum 0.0
+# HELP sic_lai_input_summary_chars_created Caracteres no resumo validado
+# TYPE sic_lai_input_summary_chars_created gauge
+sic_lai_input_summary_chars_created 1.7948676196079323e+09
+# HELP sic_lai_input_detail_chars Caracteres no detalhamento validado
+# TYPE sic_lai_input_detail_chars histogram
+sic_lai_input_detail_chars_bucket{le="0.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="50.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="100.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="250.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="500.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="1000.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="2500.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="5000.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="10000.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="25000.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="50000.0"} 0.0
+sic_lai_input_detail_chars_bucket{le="+Inf"} 0.0
+sic_lai_input_detail_chars_count 0.0
+sic_lai_input_detail_chars_sum 0.0
+# HELP sic_lai_input_detail_chars_created Caracteres no detalhamento validado
+# TYPE sic_lai_input_detail_chars_created gauge
+sic_lai_input_detail_chars_created 1.794867619607955e+09
+# HELP sic_lai_risk_score Score indicativo de risco
+# TYPE sic_lai_risk_score histogram
+sic_lai_risk_score_bucket{le="0.0"} 0.0
+sic_lai_risk_score_bucket{le="0.1"} 0.0
+sic_lai_risk_score_bucket{le="0.2"} 0.0
+sic_lai_risk_score_bucket{le="0.3"} 0.0
+sic_lai_risk_score_bucket{le="0.4"} 0.0
+sic_lai_risk_score_bucket{le="0.5"} 0.0
+sic_lai_risk_score_bucket{le="0.6"} 0.0
+sic_lai_risk_score_bucket{le="0.7"} 0.0
+sic_lai_risk_score_bucket{le="0.8"} 0.0
+sic_lai_risk_score_bucket{le="0.9"} 0.0
+sic_lai_risk_score_bucket{le="1.0"} 0.0
+sic_lai_risk_score_bucket{le="+Inf"} 0.0
+sic_lai_risk_score_count 0.0
+sic_lai_risk_score_sum 0.0
+# HELP sic_lai_risk_score_created Score indicativo de risco
+# TYPE sic_lai_risk_score_created gauge
+sic_lai_risk_score_created 1.794867619607983e+09
+# HELP sic_lai_risk_factors Quantidade de fatores
+# TYPE sic_lai_risk_factors histogram
+sic_lai_risk_factors_bucket{le="0.0"} 0.0
+sic_lai_risk_factors_bucket{le="1.0"} 0.0
+sic_lai_risk_factors_bucket{le="2.0"} 0.0
+sic_lai_risk_factors_bucket{le="3.0"} 0.0
+sic_lai_risk_factors_bucket{le="5.0"} 0.0
+sic_lai_risk_factors_bucket{le="10.0"} 0.0
+sic_lai_risk_factors_bucket{le="20.0"} 0.0
+sic_lai_risk_factors_bucket{le="+Inf"} 0.0
+sic_lai_risk_factors_count 0.0
+sic_lai_risk_factors_sum 0.0
+# HELP sic_lai_risk_factors_created Quantidade de fatores
+# TYPE sic_lai_risk_factors_created gauge
+sic_lai_risk_factors_created 1.7948676196080022e+09
+# HELP sic_lai_openrouter_prompt_tokens Tokens de entrada informados pelo provedor
+# TYPE sic_lai_openrouter_prompt_tokens histogram
+sic_lai_openrouter_prompt_tokens_bucket{le="0.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="128.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="256.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="512.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="1024.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="2048.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="4096.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="8192.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="16384.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="32768.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="65536.0"} 0.0
+sic_lai_openrouter_prompt_tokens_bucket{le="+Inf"} 0.0
+sic_lai_openrouter_prompt_tokens_count 0.0
+sic_lai_openrouter_prompt_tokens_sum 0.0
+# HELP sic_lai_openrouter_prompt_tokens_created Tokens de entrada informados pelo provedor
+# TYPE sic_lai_openrouter_prompt_tokens_created gauge
+sic_lai_openrouter_prompt_tokens_created 1.7948676196080182e+09
+# HELP sic_lai_openrouter_completion_tokens Tokens de geração, incluindo raciocínio
+# TYPE sic_lai_openrouter_completion_tokens histogram
+sic_lai_openrouter_completion_tokens_bucket{le="0.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="128.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="256.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="512.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="1024.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="2048.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="4096.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="8192.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="16384.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="32768.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="65536.0"} 0.0
+sic_lai_openrouter_completion_tokens_bucket{le="+Inf"} 0.0
+sic_lai_openrouter_completion_tokens_count 0.0
+sic_lai_openrouter_completion_tokens_sum 0.0
+# HELP sic_lai_openrouter_completion_tokens_created Tokens de geração, incluindo raciocínio
+# TYPE sic_lai_openrouter_completion_tokens_created gauge
+sic_lai_openrouter_completion_tokens_created 1.7948676196080358e+09
+# HELP sic_lai_openrouter_reasoning_tokens Tokens de raciocínio informados pelo provedor
+# TYPE sic_lai_openrouter_reasoning_tokens histogram
+sic_lai_openrouter_reasoning_tokens_bucket{le="0.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="128.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="256.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="512.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="1024.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="2048.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="4096.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="8192.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="16384.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="32768.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="65536.0"} 0.0
+sic_lai_openrouter_reasoning_tokens_bucket{le="+Inf"} 0.0
+sic_lai_openrouter_reasoning_tokens_count 0.0
+sic_lai_openrouter_reasoning_tokens_sum 0.0
+# HELP sic_lai_openrouter_reasoning_tokens_created Tokens de raciocínio informados pelo provedor
+# TYPE sic_lai_openrouter_reasoning_tokens_created gauge
+sic_lai_openrouter_reasoning_tokens_created 1.7948676196080537e+09
+# HELP sic_lai_openrouter_cost_usd_total Custo em USD informado pelo provedor
+# TYPE sic_lai_openrouter_cost_usd_total counter
+sic_lai_openrouter_cost_usd_total 0.0
+# HELP sic_lai_openrouter_cost_usd_created Custo em USD informado pelo provedor
+# TYPE sic_lai_openrouter_cost_usd_created gauge
+sic_lai_openrouter_cost_usd_created 1.794867619608074e+09

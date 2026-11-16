@@ -1,0 +1,272 @@
+[
+  {
+    "case": "regra-1",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "003792f5-5dc7-48f5-b29b-146155f31d8e",
+    "expected_status": 200,
+    "client_latency_ms": 2.151
+  },
+  {
+    "case": "regra-2",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "117187b2-e24d-4833-8bb2-2f68c0d09df4",
+    "expected_status": 200,
+    "client_latency_ms": 1.06
+  },
+  {
+    "case": "regra-3",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "ef768730-1d69-417b-80fd-d8c1fba3dc95",
+    "expected_status": 200,
+    "client_latency_ms": 0.843
+  },
+  {
+    "case": "regra-4",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "0fa1f2aa-8217-4c4d-b873-a78cb63e4531",
+    "expected_status": 200,
+    "client_latency_ms": 0.952
+  },
+  {
+    "case": "regra-5",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "f80d6db6-10be-4e88-87c5-9a2d9ee1ceb4",
+    "expected_status": 200,
+    "client_latency_ms": 0.942
+  },
+  {
+    "case": "regra-6",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "01d93cd4-d57e-4412-bcf8-cc626dd4aa85",
+    "expected_status": 200,
+    "client_latency_ms": 0.823
+  },
+  {
+    "case": "regra-7",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "15dbc523-c8a9-48e0-b12c-270f3b04a769",
+    "expected_status": 200,
+    "client_latency_ms": 0.792
+  },
+  {
+    "case": "regra-8",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "87afe902-89a8-4df0-8a1b-49b02ff46871",
+    "expected_status": 200,
+    "client_latency_ms": 0.963
+  },
+  {
+    "case": "regra-9",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "1381dc97-feb4-49be-818f-ea0eae8cb8c3",
+    "expected_status": 200,
+    "client_latency_ms": 0.798
+  },
+  {
+    "case": "regra-10",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "59e38eb4-016f-45ae-b985-ca8bc3a18ce1",
+    "expected_status": 200,
+    "client_latency_ms": 0.827
+  },
+  {
+    "case": "regra-11",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "4b25bea2-00d5-46ae-a19c-6a917df740fb",
+    "expected_status": 200,
+    "client_latency_ms": 0.882
+  },
+  {
+    "case": "regra-12",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "175a9cde-c94f-4b74-a572-14a1a8766631",
+    "expected_status": 200,
+    "client_latency_ms": 0.809
+  },
+  {
+    "case": "regra-13",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "2e6cc5c3-5c44-41c6-afab-c56c6d1dd7b3",
+    "expected_status": 200,
+    "client_latency_ms": 0.816
+  },
+  {
+    "case": "regra-14",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "7fca52e2-4258-4bba-afb3-3e612545887d",
+    "expected_status": 200,
+    "client_latency_ms": 0.818
+  },
+  {
+    "case": "regra-15",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "be23dea2-b90a-43ae-bbc3-c31dec78008a",
+    "expected_status": 200,
+    "client_latency_ms": 0.781
+  },
+  {
+    "case": "regra-16",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "3ae7d680-11fc-4744-bcd4-f8d6c97d6332",
+    "expected_status": 200,
+    "client_latency_ms": 0.816
+  },
+  {
+    "case": "regra-17",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "23a4c3d0-370e-4f3d-a9a3-7afc93a41a82",
+    "expected_status": 200,
+    "client_latency_ms": 0.808
+  },
+  {
+    "case": "regra-18",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "6f2a6aeb-643d-4fc7-9e47-3743881f5b22",
+    "expected_status": 200,
+    "client_latency_ms": 0.841
+  },
+  {
+    "case": "regra-19",
+    "expected_source": "heuristica",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "e187bc1c-fc0c-4d78-b3a0-9bb07a9e948b",
+    "expected_status": 200,
+    "client_latency_ms": 0.792
+  },
+  {
+    "case": "abstencao-1",
+    "expected_source": "abstencao",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "ceb5b4d7-afb2-4c52-bdbf-663509395401",
+    "expected_status": 200,
+    "client_latency_ms": 0.805
+  },
+  {
+    "case": "abstencao-2",
+    "expected_source": "abstencao",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "0c2363e6-3f0f-4e49-9774-493bf9ba4568",
+    "expected_status": 200,
+    "client_latency_ms": 0.776
+  },
+  {
+    "case": "abstencao-3",
+    "expected_source": "abstencao",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "ba8b9502-4752-49dc-b55b-e95026ffca60",
+    "expected_status": 200,
+    "client_latency_ms": 0.902
+  },
+  {
+    "case": "abstencao-4",
+    "expected_source": "abstencao",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "353f9c4b-d775-413c-8630-cd6a71a3d479",
+    "expected_status": 200,
+    "client_latency_ms": 0.768
+  },
+  {
+    "case": "validacao-1",
+    "expected_source": "validacao",
+    "round": 1,
+    "status_code": 422,
+    "request_id": "18798b8f-4de1-472c-8fc8-5140b814adf3",
+    "expected_status": 422,
+    "client_latency_ms": 1.231
+  },
+  {
+    "case": "validacao-2",
+    "expected_source": "validacao",
+    "round": 1,
+    "status_code": 422,
+    "request_id": "90745016-944e-4db9-b97d-028d240a3ade",
+    "expected_status": 422,
+    "client_latency_ms": 0.821
+  },
+  {
+    "case": "validacao-3",
+    "expected_source": "validacao",
+    "round": 1,
+    "status_code": 422,
+    "request_id": "6ed5086e-0682-43cc-b833-df084bb27b4a",
+    "expected_status": 422,
+    "client_latency_ms": 0.839
+  },
+  {
+    "case": "validacao-4",
+    "expected_source": "validacao",
+    "round": 1,
+    "status_code": 422,
+    "request_id": "b191da2e-0ea5-428a-8dc0-122c199f76bd",
+    "expected_status": 422,
+    "client_latency_ms": 0.789
+  },
+  {
+    "case": "remoto-1",
+    "expected_source": "modelo_remoto",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "0e7a89bd-5d9c-4e67-adb3-31825e9c5f67",
+    "expected_status": 200,
+    "client_latency_ms": 6274.118
+  },
+  {
+    "case": "remoto-2",
+    "expected_source": "modelo_remoto",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "23085dcf-d3d8-4903-87d4-21faa4e92b6f",
+    "expected_status": 200,
+    "client_latency_ms": 9746.752
+  },
+  {
+    "case": "remoto-3",
+    "expected_source": "modelo_remoto",
+    "round": 1,
+    "status_code": 200,
+    "request_id": "5c7063c7-70fe-423a-8f36-76f27d70183b",
+    "expected_status": 200,
+    "client_latency_ms": 13096.625
+  }
+]
