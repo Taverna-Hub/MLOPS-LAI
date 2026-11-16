@@ -29,6 +29,7 @@ Os scores são indicativos. As regras usam valores definidos em código e não h
 - `POST /predict`: retorna `protocolo`, `nivel_risco`, `score_risco`, `fatores_risco`, `recomendacao_sic` e `tempo_processamento_ms`.
 - `GET /health`: retorna versão, modelo e `device: "remote"`. O status é `healthy` quando há chave configurada e `degraded` quando falta a chave. O HTTP permanece 200: é uma verificação do serviço e da configuração, não uma chamada de teste ao OpenRouter nem uma validação da chave.
 - `/docs` e `/redoc`: documentação dos contratos.
+- `GET /metrics`: medições HTTP e de inferência em formato Prometheus.
 - Campos `data_resposta`, `decisao`, `especificacao_decisao`, `situacao`, `foi_prorrogado` e `foi_reencaminhado` são rejeitados com HTTP 422.
 
 ## Início rápido com Docker
@@ -103,6 +104,21 @@ Retorna `ALTO`, score `0.88`, pela regra existente. Para parar o serviço:
 docker compose down
 ```
 
+## Monitoramento da entrega
+
+O serviço grava medidas e categorias de cada atendimento em `logs/requests.jsonl`, com timestamp UTC, UUID interno, origem do resultado e uso do OpenRouter. Não grava os textos dos pedidos e respostas. Há rotação a cada 10 MB e retenção de cinco arquivos anteriores; o Compose preserva os logs no host.
+
+Para gerar carga e acompanhar o rastro sem Python no host:
+
+```bash
+docker compose exec -T sic-lai-service /app/.venv/bin/python -m monitoring.generate_load
+curl http://localhost:8000/metrics
+```
+
+Em outro terminal, use `tail -f logs/requests.jsonl` (Bash) ou `Get-Content logs/requests.jsonl -Tail 5 -Wait` (PowerShell). A rodada tem 30 pedidos fictícios, incluindo três tentativas reais ao OpenRouter. Tokens, custo e validade da resposta ficam no rastro, permitindo distinguir inferência remota de fallback.
+
+O [guia de monitoramento](monitoring/README.md) contém o roteiro completo, as 19 métricas, os cálculos de histogramas/boxplots/taxas, a política de retenção e os comandos de análise. A [planilha demonstrativa](monitoring/examples/monitoramento.xlsx) e os snapshots de uma rodada real estão versionados. A [checagem final da atividade](monitoring/VALIDACAO.md) relaciona os requisitos às evidências.
+
 ## Configuração e desenvolvimento
 
 | Variável | Padrão | Finalidade |
@@ -112,6 +128,9 @@ docker compose down
 | `OPENROUTER_TIMEOUT_SECONDS` | `120` | Timeout de cada operação de rede |
 | `OPENROUTER_MAX_TOKENS` | `4096` | Limite da geração, incluindo raciocínio |
 | `LOG_LEVEL` | `info` | Nível dos logs |
+| `MONITORING_LOG_PATH` | `logs/requests.jsonl` | Arquivo JSONL; no Compose, `/app/logs/requests.jsonl` |
+| `MONITORING_MAX_BYTES` | `10000000` | Limite de rotação em bytes |
+| `MONITORING_BACKUPS` | `5` | Quantidade de arquivos anteriores |
 
 As antigas opções `DEVICE`, `USE_SLM` e `LOCAL_FILES_ONLY` foram removidas. Para executar fora do Docker, instale Python 3.11+ e `uv`, configure `.env` e rode:
 
@@ -125,7 +144,7 @@ Verificações, sem consumir a API:
 ```bash
 uv run python -m unittest discover -s tests -v
 uv run ruff check .
-uv run ruff format src tests --check
+uv run ruff format src monitoring tests --check
 ```
 
 Os testes usam transporte HTTP simulado para verificar JSON Schema, autenticação, erros, fallback e preservação das regras. Não substituem uma avaliação de qualidade com pedidos representativos nem uma chamada real com a chave do usuário.
@@ -151,6 +170,8 @@ src/
 ## Uso de Inteligência Artificial
 
 Foram utilizados agentes de IA do **OpenCode** e do **Antigravity** como apoio durante a execução do trabalho. Os agentes foram utilizados como escritores de código em pair programming com a equipe. Também foram utilizados para auxiliar na escolha do modelo de LLM utilizado no projeto, organizar e revisar a documentação, e estruturar um guia reproduzível de execução.
+
+Na entrega de monitoramento, o **Codex** (OpenAI) apoiou a implementação do registro, das métricas e da análise. O **Claude Code** (Anthropic) foi usado na revisão final da entrega e no ajuste da documentação.
 
 As respostas foram tratadas como sugestões, não como fonte definitiva. Todo código gerado por IA foi revisado e aprovado por uma pessoa da equipe antes de ser incorporado. A equipe também comparou as descrições com o código e os documentos do projeto, revisou comandos e exemplos e registrou divergências entre a implementação atual e especificações anteriores do PRD. As decisões de domínio, a validação do conteúdo e a responsabilidade pela entrega permanecem com a equipe.
 
