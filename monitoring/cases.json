@@ -1,0 +1,418 @@
+{
+  "description": "Pedidos inteiramente fictícios para demonstração. Não constituem conjunto de treinamento nem referência representativa de produção.",
+  "cases": [
+    {
+      "name": "regra-1",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-001",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-2",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Presencial",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-002",
+        "orgao_destinatario": "Universidade de exemplo",
+        "resumo_solicitacao": "Calendário acadêmico",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-3",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Telefone",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-003",
+        "orgao_destinatario": "INSS",
+        "resumo_solicitacao": "Fluxo de atendimento",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-4",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-004",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-5",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Presencial",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-005",
+        "orgao_destinatario": "Universidade de exemplo",
+        "resumo_solicitacao": "Calendário acadêmico",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-6",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Telefone",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-006",
+        "orgao_destinatario": "INSS",
+        "resumo_solicitacao": "Fluxo de atendimento",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-7",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-007",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-8",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Presencial",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-008",
+        "orgao_destinatario": "Universidade de exemplo",
+        "resumo_solicitacao": "Calendário acadêmico",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-9",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Telefone",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-009",
+        "orgao_destinatario": "INSS",
+        "resumo_solicitacao": "Fluxo de atendimento",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-10",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-010",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-11",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Presencial",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-011",
+        "orgao_destinatario": "Universidade de exemplo",
+        "resumo_solicitacao": "Calendário acadêmico",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-12",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Telefone",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-012",
+        "orgao_destinatario": "INSS",
+        "resumo_solicitacao": "Fluxo de atendimento",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-13",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-013",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-14",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Presencial",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-014",
+        "orgao_destinatario": "Universidade de exemplo",
+        "resumo_solicitacao": "Calendário acadêmico",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-15",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Telefone",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-015",
+        "orgao_destinatario": "INSS",
+        "resumo_solicitacao": "Fluxo de atendimento",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-16",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-016",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-17",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Presencial",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-017",
+        "orgao_destinatario": "Universidade de exemplo",
+        "resumo_solicitacao": "Calendário acadêmico",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-18",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Telefone",
+        "forma_resposta": "Sistema",
+        "protocolo": "DEMO-018",
+        "orgao_destinatario": "INSS",
+        "resumo_solicitacao": "Fluxo de atendimento",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "regra-19",
+      "kind": "heuristica",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "DEMO-019",
+        "orgao_destinatario": "Ministério da Saúde",
+        "resumo_solicitacao": "Microdados de despesas",
+        "detalhamento_solicitacao": "Solicito informar os procedimentos da unidade. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. Detalhar as etapas de atendimento. "
+      }
+    },
+    {
+      "name": "abstencao-1",
+      "kind": "abstencao",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "ABST-0",
+        "orgao_destinatario": "",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "Informar canais de atendimento"
+      }
+    },
+    {
+      "name": "abstencao-2",
+      "kind": "abstencao",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "ABST-1",
+        "orgao_destinatario": "",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "Informar canais de atendimento"
+      }
+    },
+    {
+      "name": "abstencao-3",
+      "kind": "abstencao",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "ABST-2",
+        "orgao_destinatario": "IBAMA",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "abc"
+      }
+    },
+    {
+      "name": "abstencao-4",
+      "kind": "abstencao",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "ABST-3",
+        "orgao_destinatario": "IBAMA",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "abc"
+      }
+    },
+    {
+      "name": "validacao-1",
+      "kind": "validacao",
+      "expected_status": 422,
+      "payload": {}
+    },
+    {
+      "name": "validacao-2",
+      "kind": "validacao",
+      "expected_status": 422,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "INVALID",
+        "orgao_destinatario": "IBAMA",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "Informar canais de atendimento",
+        "data_resposta": "2026-11-20"
+      }
+    },
+    {
+      "name": "validacao-3",
+      "kind": "validacao",
+      "expected_status": 422,
+      "payload": {
+        "data_registro": "data-invalida",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "INVALID",
+        "orgao_destinatario": "IBAMA",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "Informar canais de atendimento"
+      }
+    },
+    {
+      "name": "validacao-4",
+      "kind": "validacao",
+      "expected_status": 422,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": [],
+        "orgao_destinatario": "IBAMA",
+        "resumo_solicitacao": "Orientação",
+        "detalhamento_solicitacao": "Informar canais de atendimento"
+      }
+    },
+    {
+      "name": "remoto-1",
+      "kind": "modelo_remoto",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "REMOTE-0",
+        "orgao_destinatario": "IBAMA",
+        "resumo_solicitacao": "Canais e horário de atendimento",
+        "detalhamento_solicitacao": "Solicito informar o horário de atendimento ao público na sede e o telefone do setor que recebe pedidos de orientação."
+      }
+    },
+    {
+      "name": "remoto-2",
+      "kind": "modelo_remoto",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "REMOTE-1",
+        "orgao_destinatario": "ANEEL",
+        "resumo_solicitacao": "Etapas de reclamação sobre medidor",
+        "detalhamento_solicitacao": "Solicito descrever as etapas administrativas de uma reclamação sobre falha no medidor residencial, quais unidades participam da apuração e como acompanhar o andamento."
+      }
+    },
+    {
+      "name": "remoto-3",
+      "kind": "modelo_remoto",
+      "expected_status": 200,
+      "payload": {
+        "data_registro": "2026-11-16T10:00:00-03:00",
+        "origem_solicitacao": "Internet",
+        "forma_resposta": "E-mail",
+        "protocolo": "REMOTE-2",
+        "orgao_destinatario": "DNIT",
+        "resumo_solicitacao": "Reconstrução documental de obras",
+        "detalhamento_solicitacao": "Solicito reunir, por obra e por exercício de 2008 a 2025, contratos assinados, medições e pareceres entre cinco superintendências. Parte dos documentos está em caixas físicas e parte em sistemas desativados. É necessário localizar caixas, digitalizar documentos e conciliar identificadores divergentes."
+      }
+    }
+  ]
+}
