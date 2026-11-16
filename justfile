@@ -10,6 +10,12 @@ run:
 test:
     uv run python -m unittest discover -s tests -v
 
+load:
+    uv run python -m monitoring.generate_load
+
+report:
+    uv run python -m monitoring.report --load-results monitoring/generated/load_results.json
+
 lint:
     uv run ruff check .
 

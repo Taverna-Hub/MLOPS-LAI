@@ -15,6 +15,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 COPY src/ ./src/
+COPY monitoring/ ./monitoring/
 COPY README.md LICENSE ./
 
 EXPOSE 8000

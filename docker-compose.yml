@@ -19,6 +19,7 @@ services:
       MONITORING_BACKUPS: ${MONITORING_BACKUPS:-5}
     volumes:
       - ./logs:/app/logs
+      - ./monitoring/generated:/app/monitoring/generated
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
