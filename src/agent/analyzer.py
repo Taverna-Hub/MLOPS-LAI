@@ -6,6 +6,7 @@ from typing import Any
 
 from src.agent.prompt import build_analysis_messages
 from src.models.openrouter import OpenRouterError, generate_analysis
+from src.monitoring import update_trace
 from src.schemas import NivelRiscoEnum, PedidoLAIRequest, TriagemLAIResponse
 
 logger = logging.getLogger("sic_lai.analyzer")
@@ -109,6 +110,7 @@ async def analisar_pedido(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
         or not pedido.detalhamento_solicitacao.strip()
         or len(pedido.detalhamento_solicitacao.strip()) < 5
     ):
+        update_trace(result_source="abstencao")
         duracao_ms = round((time.perf_counter() - inicio) * 1000, 2)
         return TriagemLAIResponse(
             protocolo=pedido.protocolo,
@@ -131,6 +133,7 @@ async def analisar_pedido(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
 
     # Para casos consolidados da CGU/SIC, responde com latência ultrabaixa (< 50ms)
     if e_caso_especifico:
+        update_trace(result_source="heuristica")
         duracao_ms = round((time.perf_counter() - inicio) * 1000, 2)
         return TriagemLAIResponse(
             protocolo=pedido.protocolo,
@@ -153,12 +156,14 @@ async def analisar_pedido(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
             prazo_atendimento=str(pedido.prazo_atendimento) if pedido.prazo_atendimento else None,
         )
         analise = await generate_analysis(messages)
+        update_trace(result_source="modelo_remoto")
         return TriagemLAIResponse(
             protocolo=pedido.protocolo,
             **analise.model_dump(),
             tempo_processamento_ms=round((time.perf_counter() - inicio) * 1000, 2),
         )
     except OpenRouterError as exc:
+        update_trace(result_source="fallback", remote_error=exc.reason)
         logger.warning("Inferência remota indisponível; utilizando fallback heurístico: %s", exc)
 
     # 4. Fallback analítico seguro

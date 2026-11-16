@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 
 from src.agent.analyzer import analisar_pedido
 from src.config import settings
+from src.monitoring import MonitoringMiddleware, update_trace
 from src.schemas import (
     FORBIDDEN_T0_FIELDS,
     HealthResponse,
@@ -45,6 +46,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+app.add_middleware(MonitoringMiddleware)
 
 
 @app.exception_handler(TemporalLeakageError)
@@ -126,4 +128,18 @@ async def health_check() -> HealthResponse:
 )
 async def predict(pedido: PedidoLAIRequest) -> TriagemLAIResponse:
     """Recebe um pedido no momento inicial t0 e calcula o risco de descumprimento de prazo."""
-    return await analisar_pedido(pedido)
+    update_trace(
+        orgao_destinatario=pedido.orgao_destinatario,
+        origem_solicitacao=pedido.origem_solicitacao,
+        forma_resposta=pedido.forma_resposta,
+        resumo_chars=len(pedido.resumo_solicitacao),
+        detalhamento_chars=len(pedido.detalhamento_solicitacao),
+    )
+    result = await analisar_pedido(pedido)
+    update_trace(
+        analysis_ms=result.tempo_processamento_ms,
+        nivel_risco=result.nivel_risco.value,
+        score_risco=result.score_risco,
+        fatores_count=len(result.fatores_risco),
+    )
+    return result

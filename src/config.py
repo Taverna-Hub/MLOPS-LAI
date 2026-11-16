@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     OPENROUTER_API_KEY: SecretStr = SecretStr("")
     OPENROUTER_TIMEOUT_SECONDS: float = Field(default=120.0, gt=0)
     OPENROUTER_MAX_TOKENS: int = Field(default=4096, gt=0)
+    MONITORING_LOG_PATH: str = "logs/requests.jsonl"
+    MONITORING_MAX_BYTES: int = Field(default=10_000_000, gt=0)
+    MONITORING_BACKUPS: int = Field(default=5, ge=1)
 
     model_config = SettingsConfigDict(
         env_file=".env",

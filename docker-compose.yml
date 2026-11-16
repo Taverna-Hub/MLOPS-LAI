@@ -14,6 +14,11 @@ services:
       OPENROUTER_TIMEOUT_SECONDS: ${OPENROUTER_TIMEOUT_SECONDS:-120}
       OPENROUTER_MAX_TOKENS: ${OPENROUTER_MAX_TOKENS:-4096}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      MONITORING_LOG_PATH: /app/logs/requests.jsonl
+      MONITORING_MAX_BYTES: ${MONITORING_MAX_BYTES:-10000000}
+      MONITORING_BACKUPS: ${MONITORING_BACKUPS:-5}
+    volumes:
+      - ./logs:/app/logs
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

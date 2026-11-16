@@ -13,6 +13,9 @@ venv/
 # Testes / ferramentas
 .pytest_cache/
 .ruff_cache/
+logs/
+monitoring/generated/
+outputs/
 
 # IDE
 .vscode/
