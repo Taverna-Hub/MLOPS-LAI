@@ -126,6 +126,8 @@ A referência é demonstrativa, não um retrato da operação real. Em produçã
 
 A exposição usa `# HELP`, `# TYPE`, nomes de séries, rótulos e valores numéricos. Durações estão em **segundos** nas métricas e **milissegundos** no JSONL. O tempo HTTP é medido na aplicação ASGI: inclui validação, análise e envio da resposta ao servidor, sem incluir a rede até o cliente nem a escrita posterior do log. O tempo remoto mede a operação de rede; a análise também inclui montagem de mensagens e validação do resultado.
 
+Os cálculos desta seção estão feitos com dados reais na planilha [`examples/analise_metrics.xlsx`](examples/analise_metrics.xlsx), que parte dos dois snapshots do `/metrics` da rodada de 16/11/2026 (`metrics_before.prom` e `metrics_after.prom`). A aba `Como_ler` resume o passo a passo, a aba `Contadores` calcula as taxas de erros e a aba `Latencia` monta o histograma, a média e a estimativa de quantis a partir dos buckets.
+
 ### Contadores e taxas de erros
 
 Para um mesmo endpoint e intervalo, use:
@@ -136,6 +138,8 @@ taxa_5xx = quantidade de respostas 500–599 / total de respostas
 ```
 
 Se o total for zero, a taxa é indisponível, não zero. Um único snapshot mostra acumulados desde o início do processo. Para um intervalo, subtraia dois snapshots do mesmo processo. Se o processo reiniciou, não subtraia os contadores atravessando o reset. Guarde as duas exposições, como faz o gerador de carga.
+
+Uma série com rótulos só aparece depois da primeira observação. Na rodada versionada, o snapshot de antes foi tirado com o processo recém-iniciado e ainda não tinha `sic_lai_http_requests_total{endpoint="/predict",...}`; nesse caso, o valor de antes é zero. A diferença entre os snapshots deu 30 respostas em `/predict`, 4 delas com status 422, ou seja, taxa de 4xx de 13,3% e de 5xx de 0%. Os quatro 422 são os pedidos de validação que a carga envia de propósito.
 
 Com um servidor Prometheus externo, uma consulta equivalente para a janela de cinco minutos seria:
 
@@ -160,18 +164,22 @@ O denominador inclui somente respostas HTTP 2xx recebidas do OpenRouter. JSON in
 
 Os buckets são **cumulativos**. `le="1"` conta tudo que levou até um segundo; `le="5"` inclui esses atendimentos e os de até cinco segundos. A frequência da faixa `(1, 5]` é `bucket_5 - bucket_1`. O primeiro bucket já é a frequência da primeira faixa. A última faixa usa o bucket `+Inf` menos o anterior.
 
-Exemplo demonstrativo:
+Os limites de latência são `0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2.5, 5, 10, 20, 30, 60, 120, 300, +Inf`. Na rodada versionada, os buckets de `/predict` ficaram assim (faixas vazias omitidas; a tabela completa está na aba `Latencia`):
 
-| Limite em segundos | Acumulado | Frequência da faixa |
+| Limite `le` em segundos | Acumulado | Frequência da faixa |
 | --- | ---: | ---: |
-| 0,1 | 8 | 8 |
-| 1 | 10 | 2 |
-| 10 | 13 | 3 |
-| +Inf | 14 | 1 |
+| 0,001 | 26 | 26 |
+| 0,005 | 27 | 1 |
+| 10 | 29 | 2 |
+| 20 | 30 | 1 |
 
-Os limites reais de latência são `0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2.5, 5, 10, 20, 30, 60, 120, 300, +Inf`. A média é `_sum / _count` quando há observações. Buckets também permitem estimar percentis, mas não recuperam as observações individuais.
+As 27 requisições até 5 ms são regras, abstenções e rejeições 422, que não chamam o modelo; as três entre 5 e 20 segundos são as chamadas ao OpenRouter. O bucket `+Inf` (30) é sempre igual ao `_count`.
 
-Na planilha, os histogramas são calculados a partir das observações do JSONL, com faixas rotuladas. As faixas têm larguras diferentes e o eixo horizontal é categórico: as barras mostram frequência por faixa, não densidade de probabilidade. As mesmas observações permitem histogramas de resumo, detalhamento, bytes, score, fatores e tokens.
+A média é `_sum / _count` quando há observações. Na rodada, `29,12 s / 30 = 970,79 ms`, exatamente a média calculada no log.
+
+Os buckets também permitem estimar percentis, interpolando dentro da faixa onde o percentil cai (é o que o `histogram_quantile` do Prometheus faz). A estimativa supõe que as observações se espalham por igual dentro da faixa e por isso depende da largura dela. Na rodada, o P95 estimado foi 8.750 ms, contra 8.183 ms exatos no log; a mediana estimada foi 0,58 ms, contra 0,28 ms exatos, porque a primeira faixa vai de 0 a 1 ms. A aba `Latencia` mostra esse cálculo passo a passo.
+
+Na planilha `monitoramento.xlsx`, os histogramas são calculados a partir das observações do JSONL, com faixas rotuladas. As faixas têm larguras diferentes e o eixo horizontal é categórico: as barras mostram frequência por faixa, não densidade de probabilidade. As mesmas observações permitem histogramas de resumo, detalhamento, bytes, score, fatores e tokens.
 
 ### Boxplot e percentis
 
@@ -224,6 +232,14 @@ As fórmulas e os gráficos da planilha estão vinculados às células. O boxplo
 
 A planilha é um exemplo estático da rodada acima. Para analisar uma nova rodada, use o `report.json` gerado pelo `monitoring.report`, que traz as mesmas estatísticas, ou cole as novas observações do JSONL na aba `Dados`, estendendo os intervalos das fórmulas.
 
+A segunda planilha, [`examples/analise_metrics.xlsx`](examples/analise_metrics.xlsx), analisa a saída do `/metrics` em vez do log:
+
+- `Como_ler`: passo a passo da leitura do `/metrics` e por quanto tempo as métricas ficam no servidor.
+- `Contadores`: `http_requests_total` antes e depois da carga, diferença, taxas de 4xx e 5xx, e origem dos resultados com a taxa de fallback.
+- `Latencia`: buckets de `/predict` antes e depois, frequência por faixa com gráfico, média por `_sum / _count` e quantis estimados pelos buckets comparados com os valores exatos do log.
+
+Para analisar outra rodada, copie os valores dos dois novos snapshots `.prom` gerados em `monitoring/generated/` nas colunas `Antes` e `Depois`; as demais colunas são fórmulas.
+
 ## Verificação da entrega
 
 ```bash
@@ -233,7 +249,7 @@ uv run ruff format src monitoring tests --check
 docker compose config --quiet
 ```
 
-Os testes simulam respostas e erros remotos sem consumir a cota do OpenRouter. Cobrem append-only, UTF-8, rotação, reinício, concorrência, ausência de textos/segredos, todas as origens de resultado, schema inválido, reconciliação de métricas, exemplos e estrutura do `.xlsx`.
+Os testes simulam respostas e erros remotos sem consumir a cota do OpenRouter. Cobrem append-only, UTF-8, rotação, reinício, concorrência, ausência de textos/segredos, todas as origens de resultado, schema inválido, reconciliação de métricas, exemplos e estrutura das duas planilhas. O teste da `analise_metrics.xlsx` confere os valores da planilha com os snapshots `.prom`.
 
 Consulte [`VALIDACAO.md`](VALIDACAO.md) para a checagem final item a item após releitura do enunciado.
 

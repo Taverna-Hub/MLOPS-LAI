@@ -117,7 +117,7 @@ curl http://localhost:8000/metrics
 
 Em outro terminal, use `tail -f logs/requests.jsonl` (Bash) ou `Get-Content logs/requests.jsonl -Tail 5 -Wait` (PowerShell). A rodada tem 30 pedidos fictícios, incluindo três tentativas reais ao OpenRouter. Tokens, custo e validade da resposta ficam no rastro, permitindo distinguir inferência remota de fallback.
 
-O [guia de monitoramento](monitoring/README.md) contém o roteiro completo, as 19 métricas, os cálculos de histogramas/boxplots/taxas, a política de retenção e os comandos de análise. A [planilha demonstrativa](monitoring/examples/monitoramento.xlsx) e os snapshots de uma rodada real estão versionados. A [checagem final da atividade](monitoring/VALIDACAO.md) relaciona os requisitos às evidências.
+O [guia de monitoramento](monitoring/README.md) contém o roteiro completo, as 19 métricas, os cálculos de histogramas/boxplots/taxas, a política de retenção e os comandos de análise. A [planilha do log](monitoring/examples/monitoramento.xlsx), a [planilha do `/metrics`](monitoring/examples/analise_metrics.xlsx) e os snapshots de uma rodada real estão versionados. A [checagem final da atividade](monitoring/VALIDACAO.md) relaciona os requisitos às evidências.
 
 ## Configuração e desenvolvimento
 

@@ -67,3 +67,55 @@ class ExampleTests(unittest.TestCase):
             scatter = ET.fromstring(archive.read(charts[-1]))
             self.assertEqual(scatter.find(".//c:scatterStyle", ns).get("val"), "line")
             self.assertIsNotNone(scatter.find(".//c:yVal/c:numRef/c:f", ns))
+
+    def test_metrics_workbook_matches_prometheus_snapshots(self):
+        ns = {
+            "s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
+            "c": "http://schemas.openxmlformats.org/drawingml/2006/chart",
+        }
+
+        def samples(name):
+            text = (EXAMPLES / name).read_text(encoding="utf-8")
+            return {
+                (s.name, tuple(sorted(s.labels.items()))): s.value
+                for family in text_string_to_metric_families(text)
+                for s in family.samples
+            }
+
+        before, after = samples("metrics_before.prom"), samples("metrics_after.prom")
+        labels = (("endpoint", "/predict"), ("method", "POST"))
+        with ZipFile(EXAMPLES / "analise_metrics.xlsx") as archive:
+            self.assertIsNone(archive.testzip())
+            counters = ET.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+            latency = ET.fromstring(archive.read("xl/worksheets/sheet3.xml"))
+
+            def value(sheet, address):
+                return float(sheet.find(f'.//s:c[@r="{address}"]/s:v', ns).text)
+
+            def formula(sheet, address):
+                return sheet.find(f'.//s:c[@r="{address}"]/s:f', ns)
+
+            buckets = sorted(
+                (float(dict(key)["le"]), count)
+                for (name, key), count in after.items()
+                if name == "sic_lai_http_duration_seconds_bucket"
+                and dict(key)["endpoint"] == "/predict"
+            )
+            self.assertEqual(len(buckets), 16)
+            for row, (_, count) in enumerate(buckets, start=5):
+                self.assertEqual(value(latency, f"D{row}"), count)
+                self.assertIsNotNone(formula(latency, f"F{row}"))
+            count = after[("sic_lai_http_duration_seconds_count", labels)]
+            total = after[("sic_lai_http_duration_seconds_sum", labels)]
+            self.assertEqual(before.get(("sic_lai_http_duration_seconds_count", labels), 0), 0)
+            self.assertEqual(value(latency, "D23"), count)
+            self.assertAlmostEqual(value(latency, "D25"), total / count * 1000)
+            self.assertAlmostEqual(value(latency, "H34"), 8750)
+            self.assertIsNotNone(formula(latency, "H34"))
+            self.assertEqual(value(counters, "B9"), 30)
+            self.assertEqual(value(counters, "B10"), 4)
+            self.assertAlmostEqual(value(counters, "B12"), 4 / 30)
+            self.assertIsNotNone(formula(counters, "B12"))
+            chart = ET.fromstring(archive.read("xl/charts/chart1.xml"))
+            cached = [float(v.text) for v in chart.findall(".//c:val//c:numCache/c:pt/c:v", ns)]
+            self.assertEqual(sum(cached), count)

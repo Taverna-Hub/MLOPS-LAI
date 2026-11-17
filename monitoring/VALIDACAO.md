@@ -18,12 +18,13 @@ A atividade se divide em duas partes: uma para quem serve o modelo com BentoML o
 | Rotação permitida sem reescrever eventos | Limite de 10.000.000 bytes, arquivo ativo e cinco anteriores; descarte automático do mais antigo | Testes de UTF-8, CRLF/LF e retenção aprovados |
 | `GET /metrics` no servidor | Exposição via cliente Python Prometheus, na mesma porta da API | Verificado no Docker e por parser Prometheus |
 | Compatibilidade de formato | Séries com HELP, TYPE, contadores e histogramas; snapshots `.prom` versionados | Verificado |
-| Texto explicando `/metrics` | Guia com nomes, unidades, acumulados, diferenças entre snapshots e resets | Documentado |
-| Histograma de latência por endpoint | Buckets cumulativos, cálculo por diferença e dados individuais; planilha com gráfico de frequências | Verificado |
-| Boxplot de latência por endpoint | Quartis, IQR, limites, bigodes e outliers; tabela por endpoint, gráfico do conjunto e valores extremos separados | Verificado |
+| Texto explicando `/metrics` | Guia com nomes, unidades, acumulados, diferenças entre snapshots e resets, usando os números reais da rodada versionada | Documentado |
+| Planilha analisando a saída do `/metrics` | `analise_metrics.xlsx` parte dos snapshots `metrics_before.prom` e `metrics_after.prom`: diferença entre snapshots, taxas de 4xx/5xx e de fallback, histograma por buckets, média por `_sum / _count` e quantis estimados comparados com o log | Verificado por teste contra os `.prom` |
+| Histograma de latência por endpoint | Buckets cumulativos, cálculo por diferença e dados individuais; gráfico de frequências nas duas planilhas | Verificado |
+| Boxplot de latência por endpoint | Quartis, IQR, limites, bigodes e outliers a partir do log; tabela por endpoint, gráfico do conjunto e valores extremos separados. `analise_metrics.xlsx` mostra por que o `/metrics` sozinho não permite um boxplot exato | Verificado |
 | Taxa de erros | 4xx e 5xx separados; denominador comum; taxa indisponível quando total é zero | Verificado |
 | Explicar tempo de preservação | Métricas em memória por processo; arquivos por tamanho; snapshots e relatórios até remoção manual | Documentado e validado por recriação do container |
-| Planilha preferencial | `.xlsx` com fórmulas, distribuições, categorias, histogramas e boxplot; dados reais de pedidos fictícios | Exportado, reaberto e revisado visualmente |
+| Planilha preferencial | `monitoramento.xlsx` (a partir do log) com fórmulas, distribuições, categorias, histogramas e boxplot; `analise_metrics.xlsx` (a partir do `/metrics`) com contadores, buckets e quantis; dados reais de pedidos fictícios | Verificado por testes |
 
 ## Validações executadas
 
@@ -37,6 +38,7 @@ A atividade se divide em duas partes: uma para quem serve o modelo com BentoML o
 - Foi verificado que a imagem não contém `.env` nem o runtime Torch.
 - Os cálculos do `.xlsx` foram comparados com o relatório Python. Alterações temporárias de latência, custo ausente/zero e schema ausente/inválido confirmaram o recálculo; os dados originais foram restaurados antes de exportar.
 - O `.xlsx` exportado foi reaberto para conferir a renderização do gráfico de dispersão que representa a caixa e os bigodes. Testes verificam fórmulas, caches, quatro gráficos e referências às células.
+- Os valores da `analise_metrics.xlsx` foram calculados e comparados com os snapshots `.prom` e com o relatório do log; um teste automatizado repete essa conferência.
 
 ## Decisões e limites mantidos
 
